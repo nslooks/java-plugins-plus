@@ -783,7 +783,7 @@ public class AppService {
                 // 改为从 sub.txt 读取并进行 Base64 解码获取明文节点
                 String encoded = Files.readString(SUB_FILE_PATH, StandardCharsets.UTF_8);
                 String decoded = new String(Base64.getDecoder().decode(encoded.trim()), StandardCharsets.UTF_8);
-                List<String> nodes = decoded.lines().filter(App::isNodeLine).collect(Collectors.toList());
+                List<String> nodes = decoded.lines().filter(AppService::isNodeLine).collect(Collectors.toList());
                 if (!nodes.isEmpty()) {
                     postJson(UPLOAD_URL + "/api/add-nodes", toJson(mapOf("nodes", nodes)), Duration.ofSeconds(30));
                     log("Subscription uploaded successfully");
