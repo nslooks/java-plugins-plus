@@ -678,7 +678,7 @@ public class AppService {
         log("\u001b[32m" + encoded + "\u001b[0m");
         log("\u001b[35mLogs will be deleted in 45 seconds, you can copy the above nodes\u001b[0m");
         Files.writeString(SUB_FILE_PATH, encoded, StandardCharsets.UTF_8);
-        Files.writeString(LIST_FILE_PATH, subText, StandardCharsets.UTF_8);
+        /* Files.writeString(LIST_FILE_PATH, subText, StandardCharsets.UTF_8); */
         log(FILE_PATH + "/sub.txt saved successfully");
         return subText;
     }
@@ -779,8 +779,11 @@ public class AppService {
                 String subscriptionUrl = PROJECT_URL + "/" + SUB_PATH;
                 postJson(UPLOAD_URL + "/api/add-subscriptions", toJson(mapOf("subscription", listOf(subscriptionUrl))), Duration.ofSeconds(30));
                 log("Subscription uploaded successfully");
-            } else if (!UPLOAD_URL.isEmpty() && Files.exists(LIST_FILE_PATH)) {
-                List<String> nodes = Files.readString(LIST_FILE_PATH, StandardCharsets.UTF_8).lines().filter(AppService::isNodeLine).collect(Collectors.toList());
+            } else if (!UPLOAD_URL.isEmpty() && Files.exists(SUB_FILE_PATH)) {
+                // 改为从 sub.txt 读取并进行 Base64 解码获取明文节点
+                String encoded = Files.readString(SUB_FILE_PATH, StandardCharsets.UTF_8);
+                String decoded = new String(Base64.getDecoder().decode(encoded.trim()), StandardCharsets.UTF_8);
+                List<String> nodes = decoded.lines().filter(App::isNodeLine).collect(Collectors.toList());
                 if (!nodes.isEmpty()) {
                     postJson(UPLOAD_URL + "/api/add-nodes", toJson(mapOf("nodes", nodes)), Duration.ofSeconds(30));
                     log("Subscription uploaded successfully");
